@@ -48,6 +48,23 @@ def move_left(board, idx):
     return tuple(board)
 
 OPS = {"up":move_up, "right":move_right, "down":move_down, "left":move_left}
+VALID_OPS = {0:(move_up, move_left), 1:(move_up, move_left, move_right), 2:(move_up, move_right),
+             3:(move_down, move_left), 4:(move_down, move_left, move_right), 5:(move_down, move_right)}
+
+def create_children(board, idx):
+    # ops = []
+    # idx is location of empty square
+    for i in (idx-3, idx+1, idx+3, idx-1):
+        if idx < 3 or idx > 5:
+            continue
+        if idx == 2 or idx == 5:
+            return ()
+        if idx < 0 or idx > 2:
+            return ()
+        if idx == 0 or idx == 3:
+            return ()
+    global VALID_OPS
+    return VALID_OPS[idx]
 
 def dfs(board):
     stack = []
