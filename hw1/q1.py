@@ -1,10 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-# import networkx as nwx
-# import matplotlib as mpl
-# from matplotlib import pyplot as plt
-
 INIT = ( 1 , 4 , 2 ,
          5 , 3 , 0 )
 
@@ -60,23 +56,23 @@ def dfs(board):
     idx = 5
     global GOAL
     global OPS
-
     stack.append(board)
     while stack:
         crt_brd = stack.pop(-1)
-
+        visited.add(crt_brd)
         if crt_brd == GOAL:
             return path
         for op in OPS.iteritems():
             nxt_brd = op[1](crt_brd, idx)
-            if (crt_brd not in visited) and nxt_brd:
+            stack.append(nxt_brd)
+            if nxt_brd and (nxt_brd not in visited):
                 path.append(op[0])
-            visited.add(crt_brd)
-    return 0
+    return path
 
 def main():
     global INIT
-    print_board(INIT)
+    path = dfs(INIT)
+    print_board(path)
     return 0
 
 if __name__ == '__main__':
