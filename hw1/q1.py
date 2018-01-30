@@ -62,10 +62,13 @@ def dfs(board):
         visited.add(crt_brd)
         if crt_brd == GOAL:
             return path
-        for op in OPS.iteritems():
-            nxt_brd = op[1](crt_brd, idx)
-            stack.append(nxt_brd)
-            if nxt_brd and (nxt_brd not in visited):
+        if crt_brd not in visited:
+            visited.add(crt_brd)
+        for i in [i if i > 0 and i < 5 else 6 for i in (idx-3, idx+1, idx+3, idx-1)]:
+            for op in OPS.iteritems():
+                nxt_brd = op[1](crt_brd, i)
+                idx = i
+                stack.append(nxt_brd)
                 path.append(op[0])
     return path
 
