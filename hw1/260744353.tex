@@ -76,15 +76,33 @@
 	\thispagestyle{fancy}
 	
 	\section{Six-Puzzle}
-		\subsection{}
+		\subsection{a)}
 		\begin{figure}[ht]
 			\centering
 			\includegraphics[height=300px,width=400px,trim={0 360px 0 0},clip]{q1.pdf}
-			\linespread{0.8}\caption{Counter-example.}
+			\linespread{0.8}\caption{Search tree}
 		\end{figure}
+		
+		\subsection{b)}
+		Yes.
+		If we use Manhattan distance, then we have an underestimating (optimistic) heuristic as it is exactly calculating the most direct path from a square's current position to its goal position.
+		In a version of the puzzle where squares can move over each other, it is optimal.
+		
+		If we add cost (based on square values), we are not changing this fact, as while the cost would increase, Manhattan would still be the same most optimistic path so the smallest (unit) cost.
+		
+		\subsection{c)}
+		In this case, we simply use a sort of "Manhattan distance" except each movement has a cost of its value (multiply the distance for each square as the final cost) for the heuristic.
+		
+		It is still optimistic for the same reason as previously explained, but with the cost factored in the calculations, it dominates the unit cost version.
+		
+		\subsection{d)}
+		No.
+		Manhattan distance would overestimate every up and down movement.
+		It would still be optimistic for most cases (as there are only two rows so at most one up and down movement but one or two left and right movement) but for the simple case of the distance being one and so only moving once up or down, Manhattan would estimate 1 even though the cost is 0.5.
 		
 	\section{Search algorithms}
 	    \subsection{a)}
+	    A state space which is a tree with a single branch, where each child has a single child (a path) is $O(n)$ for DFS (just go down the tree) but $\sum_{k=1}^{n} = O(n^2)$ for IDS as it keeps restarting at every depth.
 	    
 	    \subsection{b)}
 	    True.
@@ -109,15 +127,23 @@
 	\section{Constraint satisfaction}
 	    \subsection{a)}
 	    \begin{itemize}
-            \item Variables: rooks $\{R_1, R_2, ... , R_k\}$ where $R_i = [x_i, y_i]$ (position of the rook on the board)
-            \item Domain: $k \leq n^2, \{\forall x_i, y_i | x_i < n \wedge y_i < n \wedge x_i \in \mathbf{N} \wedge y_i \in \mathbf{N}\}$ (position of each rook must be within board and positive integer)
-            \item Constraints: $\left|R_i - R_j\right| \neq \left|i - j\right|$ (no two rooks can be on the same diagonal)
+            \item Variables: rooks $\{R_1, R_2, ... , R_k\}$ (one rook per row which is the index, value is column)
+            \item Domain: $\{1, 2, ... , n\}$, $k \in \mathbf{N}$
+            \item Constraints: $k \leq n^2$ or $k \le $ $R_i \neq R_j$ (no two rooks can be on the same column)
         \end{itemize}
         
         \subsection{b)}
-        
+        \begin{figure}[ht]
+			\centering
+			\includegraphics[height=250px,width=425px,trim={0 150 0 0},clip]{q4.pdf}
+			\linespread{0.8}\caption{Search tree without forward checking. The backtracking algorithm would only generate the nodes marked with red numbers.}
+		\end{figure}
         
         \subsection{c)}
-        
+        \begin{figure}[ht]
+			\centering
+			\includegraphics[height=175px,width=425px,trim={0 350 100 0},clip]{q4c.pdf}
+			\linespread{0.8}\caption{Search tree with forward checking.}
+		\end{figure}
 	
 \end{document}
