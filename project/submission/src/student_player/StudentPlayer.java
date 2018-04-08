@@ -29,7 +29,7 @@ public class StudentPlayer extends TablutPlayer {
 
         // Is random the best you can do?
 //        Move myMove = boardState.getRandomMove();
-    	int maxDepth = 25;
+    	int maxDepth = 2;
     	Move myMove = MyTools.pickMove(boardState, maxDepth);
 
         // Return your move to be processed by the server.

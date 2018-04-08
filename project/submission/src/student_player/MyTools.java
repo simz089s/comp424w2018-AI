@@ -11,14 +11,17 @@ import tablut.TablutMove;
 
 public class MyTools {
     /**
+     * Node evaluation function
+     * 
      * @param tbs A board state
      * @return The value of a node from a max player perspective
      */
     public static int evalMove(TablutBoardState tbs) {
     	int minPlayer = tbs.getOpponent();
     	int maxPlayer = 1 - minPlayer;
+    	
+//		Swedes
     	if (maxPlayer == TablutBoardState.SWEDE) {
-//    		Swedes
     		Coord kingPos = tbs.getKingPosition();
     		int value = Coordinates.distanceToClosestCorner(kingPos);
     		List<Coord> neighbors = Coordinates.getNeighbors(kingPos);
@@ -27,8 +30,10 @@ public class MyTools {
     			if (Coordinates.isCorner(pos)) value--;
     		}
     		return value;
-    	} else if (maxPlayer == TablutBoardState.MUSCOVITE) {
-//    		Muscovites
+    	}
+    	
+//		Muscovites
+    	else if (maxPlayer == TablutBoardState.MUSCOVITE) {
     		Coord kingPos = tbs.getKingPosition();
     		int value = -Coordinates.distanceToClosestCorner(kingPos);
     		value += tbs.getNumberPlayerPieces(maxPlayer);
@@ -39,7 +44,9 @@ public class MyTools {
 //    			if (Coordinates.isCorner(pos)) value++;
     		}
     		return value;
-    	} else {
+    	}
+    	
+    	else {
     		return 0;
     	}
     }
@@ -56,13 +63,12 @@ public class MyTools {
     		return evalMove(tbs);
     	}
     	
-//    	int minPlayer = tbs.getOpponent();
-//    	int maxPlayer = 1 - minPlayer;
     	ArrayList<TablutMove> moves = tbs.getAllLegalMoves();
     	
     	int bestValue = Integer.MIN_VALUE;
     	TablutBoardState currState = tbs;
     	
+//    	Try each move by going as deep as chosen for minimaxing
     	for (TablutMove move : moves) {
     		currState = (TablutBoardState)tbs.clone();
     		currState.processMove(move);
@@ -78,6 +84,7 @@ public class MyTools {
         		
         		int newValue = findMove(currState, originalMaxPlayer, depth+1, maxDepth);
         		
+//        		Update min/max value
         		if (originalMaxPlayer == maxPlayer) {
 //        			Max node
         			if (bestValue < newValue) {
@@ -97,6 +104,7 @@ public class MyTools {
     
     /**
      * @param tbs A board state
+     * @param maxDepth A maximum search depth
      * @return The move with the best value
      */
     public static TablutMove pickMove(TablutBoardState tbs, int maxDepth) {
@@ -106,11 +114,13 @@ public class MyTools {
     	int bestValue = Integer.MIN_VALUE;
     	TablutMove bestMove = moves.get(0);
     	
+//    	From the root, get the best move of all the children/possible moves
     	for (TablutMove move : moves) {
         	TablutBoardState currState = tbs;
         	currState = (TablutBoardState)tbs.clone();
-        	
         	currState.processMove(move);
+        	
+//        	Get the value of this move and update the best value if better
         	int newValue = findMove(currState, maxPlayer, 0, maxDepth);
         	
         	if (bestValue < newValue) {
