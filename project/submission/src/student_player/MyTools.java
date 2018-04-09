@@ -3,7 +3,6 @@ package student_player;
 import java.util.ArrayList;
 import java.util.List;
 
-import boardgame.Board;
 import coordinates.Coord;
 import coordinates.Coordinates;
 import tablut.TablutBoardState;
@@ -14,7 +13,7 @@ public class MyTools {
      * Node evaluation function
      * 
      * @param tbs A board state
-     * @return The value of a node from a max player perspective
+     * @return The value of a node from a max player perspective (the caller)
      */
     public static int evalMove(TablutBoardState tbs) {
     	int minPlayer = tbs.getOpponent();
@@ -23,11 +22,11 @@ public class MyTools {
 //		Swedes
     	if (maxPlayer == TablutBoardState.SWEDE) {
     		Coord kingPos = tbs.getKingPosition();
-    		int value = Coordinates.distanceToClosestCorner(kingPos);
+    		int value = Coordinates.distanceToClosestCorner(kingPos) * 5;
     		List<Coord> neighbors = Coordinates.getNeighbors(kingPos);
     		for (Coord pos : neighbors) {
-    			if (tbs.isOpponentPieceAt(pos)) value--;
-    			if (Coordinates.isCorner(pos)) value--;
+    			if (tbs.isOpponentPieceAt(pos)) value-=10;
+//    			if (Coordinates.isCorner(pos)) value--;
     		}
     		return value;
     	}
@@ -35,12 +34,12 @@ public class MyTools {
 //		Muscovites
     	else if (maxPlayer == TablutBoardState.MUSCOVITE) {
     		Coord kingPos = tbs.getKingPosition();
-    		int value = -Coordinates.distanceToClosestCorner(kingPos);
+    		int value = -Coordinates.distanceToClosestCorner(kingPos) * 5;
     		value += tbs.getNumberPlayerPieces(maxPlayer);
-    		value -= tbs.getNumberPlayerPieces(minPlayer);
+//    		value -= tbs.getNumberPlayerPieces(minPlayer);
     		List<Coord> neighbors = Coordinates.getNeighbors(kingPos);
     		for (Coord pos : neighbors) {
-    			if (tbs.getPieceAt(pos) == TablutBoardState.Piece.BLACK) value++;
+    			if (tbs.getPieceAt(pos) == TablutBoardState.Piece.BLACK) value+=10;
 //    			if (Coordinates.isCorner(pos)) value++;
     		}
     		return value;
@@ -59,8 +58,17 @@ public class MyTools {
      * @return Minimax value
      */
     public static int findMove(TablutBoardState tbs, int originalMaxPlayer, int depth, int maxDepth) {
-    	if (depth == maxDepth || tbs.getWinner() != Board.NOBODY || tbs.getTurnNumber() == 100) {
+    	int possibleWinner = tbs.getWinner();
+    	int minPlayer = tbs.getOpponent();
+    	int maxPlayer = 1 - minPlayer;
+    	if (depth == maxDepth || tbs.getTurnNumber() >= 99) {
     		return evalMove(tbs);
+    	}
+    	if (possibleWinner == maxPlayer) {
+    		return Integer.MAX_VALUE;
+    	}
+    	if (possibleWinner == minPlayer) {
+    		return Integer.MIN_VALUE;
     	}
     	
     	ArrayList<TablutMove> moves = tbs.getAllLegalMoves();
@@ -73,12 +81,17 @@ public class MyTools {
     		currState = (TablutBoardState)tbs.clone();
     		currState.processMove(move);
     		
-    		int minPlayer = currState.getOpponent();
-        	int maxPlayer = 1 - minPlayer;
+    		minPlayer = currState.getOpponent();
+        	maxPlayer = 1 - minPlayer;
     		
-    		if (currState.getWinner() != Board.NOBODY || currState.getTurnNumber() == 100) {
-//    			Terminal state node or maximum depth reached
-    			return evalMove(currState);
+        	if (depth == maxDepth || tbs.getTurnNumber() >= 99) {
+        		return evalMove(tbs);
+        	}
+        	if (possibleWinner == maxPlayer) {
+        		return Integer.MAX_VALUE;
+        	}
+        	if (possibleWinner == minPlayer) {
+        		return Integer.MIN_VALUE;
         	} else {
 //        		Keep going
         		
